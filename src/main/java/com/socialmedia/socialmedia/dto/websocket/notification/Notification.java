@@ -7,12 +7,20 @@ public class Notification implements WebsocketMessage {
     private long to;
     private long from;
 
-    public Notification() {}
-
-    public Notification(String event, long to, long from) {
+    public Notification(String event, long from, long to) {
         this.event = event;
         this.to = to;
         this.from = from;
+    }
+
+    @Override
+    public String getEvent() {
+        return event;
+    }
+
+    @Override
+    public void setEvent(String event) {
+        this.event = event;
     }
 
     @Override
@@ -27,21 +35,11 @@ public class Notification implements WebsocketMessage {
 
     @Override
     public long getFrom() {
-        return 0;
+        return from;
     }
 
     @Override
     public void setFrom(long from) {
         this.from = from;
-    }
-
-    @Override
-    public String getEvent() {
-        return this.event;
-    }
-
-    @Override
-    public void setEvent(String event) {
-        this.event = event;
     }
 }

@@ -72,7 +72,7 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest user, HttpServletResponse res, HttpServletRequest req) throws JsonProcessingException {
+    public ResponseEntity<String> login(@RequestBody LoginRequest user, HttpServletResponse res, HttpServletRequest req) {
         setHeaders(res);
         User u =  userService.findUserByEmail(user.getEmail()).orElse(null);
         if (u == null) {
@@ -125,7 +125,7 @@ public class UserController {
     }
 
     @GetMapping("/reconnect")
-    public ResponseEntity<String> reconnect(HttpServletResponse res, HttpServletRequest req) throws JsonProcessingException {
+    public ResponseEntity<String> reconnect(HttpServletResponse res, HttpServletRequest req) {
         setHeaders(res);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (isAnonymous(auth)) {
@@ -163,8 +163,6 @@ public class UserController {
         User  recipient = userService.findUserById(message.recipient().id());
         long fId = message.friendshipId();
         // Define the formatter
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-        LocalDateTime timestamp = LocalDateTime.parse(message.timestamp(), formatter);
         String content = message.message();
         Message msg = new Message(fId, u, recipient, content);
         messageService.save(msg);
@@ -250,7 +248,7 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/friendRequest/create")
+    @PostMapping("/friendRequest")
     public ResponseEntity<?> sendFriendRequest(@RequestBody Long friendId, HttpServletResponse res) {
         setHeaders(res);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -270,8 +268,8 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/friendRequest/delete")
-    public ResponseEntity<?> cancelFriendRequest(@RequestBody Long reqId, HttpServletResponse res) {
+    @DeleteMapping("/friendRequest/{reqId}")
+    public ResponseEntity<?> cancelFriendRequest(@PathVariable Long reqId, HttpServletResponse res) {
         setHeaders(res);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (isAnonymous(auth)) {
@@ -290,8 +288,8 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/friendRequest/accept")
-    public ResponseEntity<?> acceptFriendRequest(@RequestBody Long reqId, HttpServletResponse res) {
+    @PostMapping("/friendRequest/{reqId}")
+    public ResponseEntity<?> acceptFriendRequest(@PathVariable Long reqId, HttpServletResponse res) {
         setHeaders(res);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (isAnonymous(auth)) {
@@ -306,13 +304,13 @@ public class UserController {
         }
         Map<String, Object> response = new HashMap<>();
         response.put("requests", userService.getFriendRequests(id));
-        response.put("message", "Friend request cancelled.");
+        response.put("message", "Friend request accepted.");
         response.put("friends", userService.getUserFriends(id));
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/friend/delete")
-    public ResponseEntity<?> deleteFriend(@RequestBody Long friendshipId, HttpServletResponse res) {
+    @DeleteMapping("/friend/{friendshipId}")
+    public ResponseEntity<?> deleteFriend(@PathVariable Long friendshipId, HttpServletResponse res) {
         setHeaders(res);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (isAnonymous(auth)) {

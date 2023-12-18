@@ -4,6 +4,7 @@ import com.socialmedia.socialmedia.filter.JwtAuthenticationFilter;
 import com.socialmedia.socialmedia.interceptor.QueryParamHandshakeInterceptor;
 import com.socialmedia.socialmedia.services.impl.JWTService;
 import com.socialmedia.socialmedia.services.impl.MyUserDetailsService;
+import com.socialmedia.socialmedia.services.impl.UserServiceImpl;
 import com.socialmedia.socialmedia.websocket.SocketHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,10 +33,12 @@ import java.util.Collections;
 public class SecurityConfig implements WebSocketConfigurer, WebMvcConfigurer {
     private final MyUserDetailsService userDetailsService;
     private final JWTService jwtService;
+    private final UserServiceImpl userService;
 
-    public SecurityConfig(MyUserDetailsService userDetailsService, JWTService jwtService) {
+    public SecurityConfig(MyUserDetailsService userDetailsService, JWTService jwtService, UserServiceImpl userService) {
         this.userDetailsService = userDetailsService;
         this.jwtService = jwtService;
+        this.userService = userService;
     }
 
 
@@ -59,10 +62,9 @@ public class SecurityConfig implements WebSocketConfigurer, WebMvcConfigurer {
                         .requestMatchers("/api/verify", "/api/resend").hasRole("TEMP")
                         .requestMatchers(
                                 "/api/logout",
-                                "/api/friendRequest/create",
-                                "/api/friendRequest/delete",
-                                "/api/friendRequest/accept",
-                                "/api/friend/delete",
+                                "/api/friendRequest/**",
+                                "/api/friendRequest",
+                                "/api/friend/**",
                                 "/api/message/store"
                         ).hasRole("VERIFIED"))
                 .userDetailsService(userDetailsService)
@@ -73,7 +75,7 @@ public class SecurityConfig implements WebSocketConfigurer, WebMvcConfigurer {
     CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-        config.setAllowedMethods(Arrays.asList("GET", "POST"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT"));
         config.setAllowedHeaders(Arrays.asList(
                 "Content-Type",
                 "Authorization",
@@ -100,7 +102,7 @@ public class SecurityConfig implements WebSocketConfigurer, WebMvcConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new SocketHandler(),"/socket")
+        registry.addHandler(new SocketHandler(userService),"/socket")
                 .setAllowedOriginPatterns("*")
                 .addInterceptors(new QueryParamHandshakeInterceptor(jwtService));
 

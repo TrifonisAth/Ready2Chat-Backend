@@ -30,9 +30,8 @@ public class EmailServiceImpl implements EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(sender);
         message.setTo(token.getUser().getEmail());
-        message.setSubject("Verify your ReadyChat Account");
-//        message.setText("Click the link below to verify your email"+"\n\n"+ "http://localhost:8080/api/verify?t="+token.getToken()+"&id="+token.getId());
-        message.setText("Thank you for registering: "+ token.getUser().getDisplayName() + "\n\nUse the following 6-digit code to verify your email: \n\n<b style='font-size:18px;'>" + token.getToken() + "</b>");
+        message.setSubject("NoReply: Verify your email");
+        message.setText("Thank you for registering: "+ token.getUser().getDisplayName() + "\n\nUse the following 6-digit code to verify your email: \n\n" + token.getToken());
         javaMailSender.send(message);
     }
 

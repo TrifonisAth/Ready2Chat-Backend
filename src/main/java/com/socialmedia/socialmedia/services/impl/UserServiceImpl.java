@@ -3,13 +3,13 @@ package com.socialmedia.socialmedia.services.impl;
 import com.socialmedia.socialmedia.dao.impl.MessageDAOImpl;
 import com.socialmedia.socialmedia.dao.impl.UserDAOImpl;
 import com.socialmedia.socialmedia.dto.ConversationDTO;
+import com.socialmedia.socialmedia.dto.FriendDTO;
 import com.socialmedia.socialmedia.dto.FriendRequestDTO;
 import com.socialmedia.socialmedia.dto.MessageDTO;
-import com.socialmedia.socialmedia.dto.FriendDTO;
 import com.socialmedia.socialmedia.dto.user_credentials.RegistrationRequest;
 import com.socialmedia.socialmedia.entities.*;
-import com.socialmedia.socialmedia.services.interfaces.EmailService;
 import com.socialmedia.socialmedia.services.interfaces.UserService;
+import jakarta.annotation.PostConstruct;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +18,10 @@ import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private final EmailService emailService;
     private final UserDAOImpl userDAO;
     private final MessageDAOImpl messageDAO;
 
-    public UserServiceImpl(EmailService emailService, UserDAOImpl userDAO, MessageDAOImpl messageDAO) {
-        this.emailService = emailService;
+    public UserServiceImpl(UserDAOImpl userDAO, MessageDAOImpl messageDAO) {
         this.userDAO = userDAO;
         this.messageDAO = messageDAO;
     }
@@ -159,6 +157,16 @@ public class UserServiceImpl implements UserService {
             }
         }
     }
+
+    @PostConstruct
+    private void logoutAllUsers() {
+        System.out.println("Logging out all users");
+        List<User> users = userDAO.findAll();
+        for (User user : users) {
+            userDAO.logout(user);
+        }
+    }
+
 
     @Override
     public List<String> getUserRoles(long userId) {
