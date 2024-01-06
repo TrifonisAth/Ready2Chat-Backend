@@ -11,6 +11,7 @@ create table users (
 
 create table friendships (
 	id int auto_increment primary key,
+    date timestamp,
     user_id1 int not null,
     user_id2 int not null,
     foreign key (user_id1) references users(user_id)
@@ -72,4 +73,4 @@ create table messages (
     on delete cascade on update no action,
     foreign key (recipient_id) references users(user_id)
     on delete cascade on update no action
-);
+); 

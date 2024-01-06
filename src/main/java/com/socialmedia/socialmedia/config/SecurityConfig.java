@@ -65,7 +65,7 @@ public class SecurityConfig implements WebSocketConfigurer, WebMvcConfigurer {
                                 "/api/friendRequest/**",
                                 "/api/friendRequest",
                                 "/api/friend/**",
-                                "/api/message/store"
+                                "/api/message"
                         ).hasRole("VERIFIED"))
                 .userDetailsService(userDetailsService)
                 .build();

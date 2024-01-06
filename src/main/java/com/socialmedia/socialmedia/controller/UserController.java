@@ -19,8 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,7 +147,7 @@ public class UserController {
         return getStringResponseEntity(response);
     }
 
-    @PostMapping("/message/store")
+    @PostMapping("/message")
     public ResponseEntity<?> storeMessage(@RequestBody ChatMessageDTO message, HttpServletResponse res) {
         setHeaders(res);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -166,7 +164,9 @@ public class UserController {
         String content = message.message();
         Message msg = new Message(fId, u, recipient, content);
         messageService.save(msg);
-        return ResponseEntity.ok().body("Message received.");
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Message stored.");
+        return ResponseEntity.ok().body(response);
     }
 
 
